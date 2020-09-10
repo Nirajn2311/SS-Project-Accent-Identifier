@@ -59,8 +59,8 @@ def mp3getter(lst):
 #  'http://accent.gmu.edu/browse_language.php?function=find&language=urdu',
 #  'http://accent.gmu.edu/browse_language.php?function=find&language=vietnamese']
 
-# from http://accent.gmu.edu/browse_language.php, return list of languages
-def get_languages():
+
+def get_languages(): # General function to return all languages, basically useless for us coz we choose our languages
     url = "http://accent.gmu.edu/browse_language.php"
     html = get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
@@ -71,20 +71,17 @@ def get_languages():
             languages.append(li.string)
     return languages
 
-# from list of languages, return list of urls
 
-
-def get_language_urls(lst):
+def get_language_urls(lst): # Just returns list of urls of each language, not much use
     urls = []
     for language in lst:
         urls.append(
             'http://accent.gmu.edu/browse_language.php?function=find&language=' + language)
     return urls
 
+
 # from language, get the number of speakers of that language
-
-
-def get_num(language):
+def get_num(language): # Returns the num of samples for a given language, useful in below function
     url = 'http://accent.gmu.edu/browse_language.php?function=find&language=' + language
     html = get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
@@ -95,29 +92,16 @@ def get_num(language):
         num = 0
     return num
 
+
 # from list of languages, return list of tuples (LANGUAGE, LANGUAGE_NUM_SPEAKERS) for mp3getter, ignoring languages
 # with 0 speakers
-
-
-def get_formatted_languages(languages):
+def get_formatted_languages(languages): # Returns a list of tuples, (lang, num), mainly used for the mp3getter function
     formatted_languages = []
     for language in languages:
         num = get_num(language)
         if num != 0:
             formatted_languages.append((language, num))
     return formatted_languages
-
-# from each language whose url is contained in the above list, save the number of speakers of that language to a list
-
-
-def get_nums(lst):
-    nums = []
-    for url in lst:
-        html = get(url)
-        soup = BeautifulSoup(html.content, 'html.parser')
-        test = soup.find_all('div', attrs={'class': 'content'})
-        nums.append(int(test[0].find('h5').text.split()[2]))
-    return nums
 
 
 def get_speaker_info(start, stop):
@@ -172,6 +156,5 @@ def copy_files(lst, path):
 if __name__ == "__main__":
     # Add the function call here
     langs = ['arabic', 'english', 'french', 'german',
-             'hindi', 'kannada', 'mandarin', 'russian', 'spanish']
-    print(lang_url)
+             'hindi', 'kannada', 'mandarin', 'russian', 'spanish', 'yao']
     print("DONE!!")
