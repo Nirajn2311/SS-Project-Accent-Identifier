@@ -1,6 +1,6 @@
 import time
 import shutil
-from requests import get
+import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
@@ -14,10 +14,10 @@ def mp3getter(lst):  # Gets all the mp3 of the given languages
             while True:
                 try:
                     fname = f"{lst[j][0]}{i}"
-                    req = get(url+fname)
+                    mp3 = requests.get(url+fname+".mp3")
                     print(f"\nDownloading {fname}.mp3")
                     with open(f"Audio/{fname}.mp3", "wb") as audio:
-                        audio.write(req.content)
+                        audio.write(mp3.content)
                 except:
                     # Once file finishes downloading, a buffer time to make sure next download doesn't start too early
                     time.sleep(2)
@@ -27,7 +27,7 @@ def mp3getter(lst):  # Gets all the mp3 of the given languages
 
 def get_languages():  # General function to return all languages, basically useless for us coz we choose our languages
     url = "http://accent.gmu.edu/browse_language.php"
-    html = get(url)
+    html = requests.get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
     languages = []
     language_lists = soup.findAll('ul', 'languagelist')
@@ -48,7 +48,7 @@ def get_language_urls(lst):  # Just returns list of urls of each language, not m
 # from language, get the number of speakers of that language
 def get_num(language):  # Returns the num of samples for a given language, useful in below function
     url = 'http://accent.gmu.edu/browse_language.php?function=find&language=' + language
-    html = get(url)
+    html = requests.get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
     div = soup.find_all('div', 'content')
     try:
@@ -82,7 +82,7 @@ def get_speaker_info(start, stop):
                 'native_language': 2, 'age': 3, 'sex': 4, 'age_onset': 5}
         url = "http://accent.gmu.edu/browse_language.php?function=detail&speakerid={}".format(
             num)
-        html = get(url)
+        html = requests.get(url)
         soup = BeautifulSoup(html.content, 'html.parser')
         body = soup.find_all('div', attrs={'class': 'content'})
         try:
