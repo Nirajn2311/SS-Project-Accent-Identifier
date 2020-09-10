@@ -1,5 +1,4 @@
 venv
 .vscode
-requirements.txt
-langs.txt
+info.txt
 Audio/
