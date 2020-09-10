@@ -7,7 +7,7 @@ import numpy as np
 
 
 # from the accent.gmu website, pass in list of languages to scrape mp3 files and save them to disk
-def mp3getter(lst): # Gets all the mp3 of the given languages
+def mp3getter(lst):  # Gets all the mp3 of the given languages
     url = "http://accent.gmu.edu/soundtracks/"
     for j in range(len(lst)):
         for i in range(1, lst[j][1]+1):
@@ -24,8 +24,7 @@ def mp3getter(lst): # Gets all the mp3 of the given languages
                     break
 
 
-
-def get_languages(): # General function to return all languages, basically useless for us coz we choose our languages
+def get_languages():  # General function to return all languages, basically useless for us coz we choose our languages
     url = "http://accent.gmu.edu/browse_language.php"
     html = get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
@@ -37,7 +36,7 @@ def get_languages(): # General function to return all languages, basically usele
     return languages
 
 
-def get_language_urls(lst): # Just returns list of urls of each language, not much use
+def get_language_urls(lst):  # Just returns list of urls of each language, not much use
     urls = []
     for language in lst:
         urls.append(
@@ -46,7 +45,7 @@ def get_language_urls(lst): # Just returns list of urls of each language, not mu
 
 
 # from language, get the number of speakers of that language
-def get_num(language): # Returns the num of samples for a given language, useful in below function
+def get_num(language):  # Returns the num of samples for a given language, useful in below function
     url = 'http://accent.gmu.edu/browse_language.php?function=find&language=' + language
     html = get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
@@ -60,7 +59,8 @@ def get_num(language): # Returns the num of samples for a given language, useful
 
 # from list of languages, return list of tuples (LANGUAGE, LANGUAGE_NUM_SPEAKERS) for mp3getter, ignoring languages
 # with 0 speakers
-def get_formatted_languages(languages): # Returns a list of tuples, (lang, num), mainly used for the mp3getter function
+# Returns a list of tuples, (lang, num), mainly used for the mp3getter function
+def get_formatted_languages(languages):
     formatted_languages = []
     for language in languages:
         num = get_num(language)
@@ -112,10 +112,11 @@ def get_speaker_info(start, stop):
 
 if __name__ == "__main__":
     # Add the function call here
-    langs = ['kannada']
-    #langs = ['arabic', 'english', 'french', 'german', 'hindi', 'kannada', 'mandarin', 'russian', 'spanish', 'yao']
+    langs = ['arabic', 'english', 'french', 'german', 'hindi',
+             'kannada', 'mandarin', 'russian', 'spanish', 'yao']
     lang_tuple = get_formatted_languages(langs)
     print(lang_tuple)
+    # [('arabic', 194), ('english', 646), ('french', 80), ('german', 42), ('hindi', 34), ('kannada', 9), ('mandarin', 150), ('russian', 81), ('spanish', 228)]
     print('Downloading now...')
     mp3getter(lang_tuple)
     print("DONE!!")
