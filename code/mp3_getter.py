@@ -10,23 +10,18 @@ import numpy as np
 # from the accent.gmu website, pass in list of languages to scrape mp3 files and save them to disk
 def mp3getter(lst):
     for j in range(len(lst)):
-        for i in range(1,lst[j][1]+1):
+        for i in range(1, lst[j][1]+1):
             while True:
                 try:
-                    urllib.urlretrieve("http://accent.gmu.edu/soundtracks/{0}{1}.mp3".format(lst[j][0], i), '{0}{1}.mp3'.format(lst[j][0], i))
+                    urllib.urlretrieve("http://accent.gmu.edu/soundtracks/{0}{1}.mp3".format(
+                        lst[j][0], i), '{0}{1}.mp3'.format(lst[j][0], i))
                 except:
                     time.sleep(2)
                 else:
                     break
 
-# from list of languages, return urls of each language landing page
-def lang_pages(lst):
-    urls=[]
-    for lang in lst:
-        urls.append('http://accent.gmu.edu/browse_language.php?function=find&language={}'.format(lang))
-    return urls
 
-#output:
+# output:
 #
 # ['http://accent.gmu.edu/browse_language.php?function=find&language=amharic',
 #  'http://accent.gmu.edu/browse_language.php?function=find&language=arabic',
@@ -70,42 +65,51 @@ def get_languages():
     html = get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
     languages = []
-    language_lists = soup.findAll('ul', attrs={'class': 'languagelist'})
+    language_lists = soup.findAll('ul', 'languagelist')
     for ul in language_lists:
         for li in ul.findAll('li'):
-            languages.append(li.text)
+            languages.append(li.string)
     return languages
-    
+
 # from list of languages, return list of urls
+
+
 def get_language_urls(lst):
     urls = []
     for language in lst:
-        urls.append('http://accent.gmu.edu/browse_language.php?function=find&language=' + language)
+        urls.append(
+            'http://accent.gmu.edu/browse_language.php?function=find&language=' + language)
     return urls
 
 # from language, get the number of speakers of that language
+
+
 def get_num(language):
     url = 'http://accent.gmu.edu/browse_language.php?function=find&language=' + language
     html = get(url)
     soup = BeautifulSoup(html.content, 'html.parser')
-    test = soup.find_all('div', attrs={'class': 'content'})
+    div = soup.find_all('div', 'content')
     try:
-        num = int(test[0].find('h5').text.split()[2])
+        num = int(div[0].h5.string.split()[2])
     except AttributeError:
         num = 0
     return num
-    
+
 # from list of languages, return list of tuples (LANGUAGE, LANGUAGE_NUM_SPEAKERS) for mp3getter, ignoring languages
 # with 0 speakers
+
+
 def get_formatted_languages(languages):
     formatted_languages = []
     for language in languages:
         num = get_num(language)
         if num != 0:
-            formatted_languages.append((language,num))
+            formatted_languages.append((language, num))
     return formatted_languages
-    
+
 # from each language whose url is contained in the above list, save the number of speakers of that language to a list
+
+
 def get_nums(lst):
     nums = []
     for url in lst:
@@ -115,6 +119,7 @@ def get_nums(lst):
         nums.append(int(test[0].find('h5').text.split()[2]))
     return nums
 
+
 def get_speaker_info(start, stop):
     '''
     Inputs: two integers, corresponding to min and max speaker id number per language
@@ -122,20 +127,26 @@ def get_speaker_info(start, stop):
     '''
 
     user_data = []
-    for num in range(start,stop):
-        info = {'speakerid': num, 'filename': 0, 'birthplace':1, 'native_language': 2, 'age':3, 'sex':4, 'age_onset':5}
-        url = "http://accent.gmu.edu/browse_language.php?function=detail&speakerid={}".format(num)
+    for num in range(start, stop):
+        info = {'speakerid': num, 'filename': 0, 'birthplace': 1,
+                'native_language': 2, 'age': 3, 'sex': 4, 'age_onset': 5}
+        url = "http://accent.gmu.edu/browse_language.php?function=detail&speakerid={}".format(
+            num)
         html = get(url)
         soup = BeautifulSoup(html.content, 'html.parser')
         body = soup.find_all('div', attrs={'class': 'content'})
         try:
-            info['filename']=str(body[0].find('h5').text.split()[0])
-            bio_bar = soup.find_all('ul', attrs={'class':'bio'})
+            info['filename'] = str(body[0].find('h5').text.split()[0])
+            bio_bar = soup.find_all('ul', attrs={'class': 'bio'})
             info['birthplace'] = str(bio_bar[0].find_all('li')[0].text)[13:-6]
-            info['native_language'] = str(bio_bar[0].find_all('li')[1].text.split()[2])
-            info['age'] = float(bio_bar[0].find_all('li')[3].text.split()[2].strip(','))
-            info['sex'] = str(bio_bar[0].find_all('li')[3].text.split()[3].strip())
-            info['age_onset'] = float(bio_bar[0].find_all('li')[4].text.split()[4].strip())
+            info['native_language'] = str(
+                bio_bar[0].find_all('li')[1].text.split()[2])
+            info['age'] = float(bio_bar[0].find_all(
+                'li')[3].text.split()[2].strip(','))
+            info['sex'] = str(bio_bar[0].find_all(
+                'li')[3].text.split()[3].strip())
+            info['age_onset'] = float(bio_bar[0].find_all('li')[
+                                      4].text.split()[4].strip())
             user_data.append(info)
         except:
             info['filename'] = ''
@@ -150,6 +161,17 @@ def get_speaker_info(start, stop):
     return df
 
 # copy files from one list of wav files to a specified location
+
+
 def copy_files(lst, path):
     for filename in lst:
-        shutil.copy2('{}.wav'.format(filename), '{}/{}.wav'.format(path, filename))
+        shutil.copy2('{}.wav'.format(filename),
+                     '{}/{}.wav'.format(path, filename))
+
+
+if __name__ == "__main__":
+    # Add the function call here
+    langs = ['arabic', 'english', 'french', 'german',
+             'hindi', 'kannada', 'mandarin', 'russian', 'spanish']
+    print(lang_url)
+    print("DONE!!")
