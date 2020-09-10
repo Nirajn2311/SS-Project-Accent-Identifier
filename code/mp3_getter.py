@@ -19,9 +19,10 @@ def mp3getter(lst):  # Gets all the mp3 of the given languages
                     with open(f"Audio/{fname}.mp3", "wb") as audio:
                         audio.write(req.content)
                 except:
+                    # Once file finishes downloading, a buffer time to make sure next download doesn't start too early
                     time.sleep(2)
                 else:
-                    break
+                    break  # To break the while loop
 
 
 def get_languages():  # General function to return all languages, basically useless for us coz we choose our languages
