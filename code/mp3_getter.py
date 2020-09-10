@@ -1,4 +1,3 @@
-import urllib
 import time
 import shutil
 from requests import get
@@ -8,56 +7,22 @@ import numpy as np
 
 
 # from the accent.gmu website, pass in list of languages to scrape mp3 files and save them to disk
-def mp3getter(lst):
+def mp3getter(lst): # Gets all the mp3 of the given languages
+    url = "http://accent.gmu.edu/soundtracks/"
     for j in range(len(lst)):
         for i in range(1, lst[j][1]+1):
             while True:
                 try:
-                    urllib.urlretrieve("http://accent.gmu.edu/soundtracks/{0}{1}.mp3".format(
-                        lst[j][0], i), '{0}{1}.mp3'.format(lst[j][0], i))
+                    fname = f"{lst[j][0]}{i}"
+                    req = get(url+fname)
+                    print(f"\nDownloading {fname}.mp3")
+                    with open(f"Audio/{fname}.mp3", "wb") as audio:
+                        audio.write(req.content)
                 except:
                     time.sleep(2)
                 else:
                     break
 
-
-# output:
-#
-# ['http://accent.gmu.edu/browse_language.php?function=find&language=amharic',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=arabic',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=bengali',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=bulgarian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=cantonese',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=dutch',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=english',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=farsi',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=french',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=german',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=greek',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=hindi',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=italian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=japanese',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=korean',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=kurdish',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=macedonian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=mandarin',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=miskito',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=nepali',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=pashto',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=polish',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=portuguese',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=punjabi',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=romanian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=russian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=serbian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=spanish',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=swedish',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=tagalog',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=thai',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=turkish',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=ukrainian',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=urdu',
-#  'http://accent.gmu.edu/browse_language.php?function=find&language=vietnamese']
 
 
 def get_languages(): # General function to return all languages, basically useless for us coz we choose our languages
@@ -144,17 +109,13 @@ def get_speaker_info(start, stop):
         df.to_csv('speaker_info_{}.csv'.format(stop))
     return df
 
-# copy files from one list of wav files to a specified location
-
-
-def copy_files(lst, path):
-    for filename in lst:
-        shutil.copy2('{}.wav'.format(filename),
-                     '{}/{}.wav'.format(path, filename))
-
 
 if __name__ == "__main__":
     # Add the function call here
-    langs = ['arabic', 'english', 'french', 'german',
-             'hindi', 'kannada', 'mandarin', 'russian', 'spanish', 'yao']
+    langs = ['kannada']
+    #langs = ['arabic', 'english', 'french', 'german', 'hindi', 'kannada', 'mandarin', 'russian', 'spanish', 'yao']
+    lang_tuple = get_formatted_languages(langs)
+    print(lang_tuple)
+    print('Downloading now...')
+    mp3getter(lang_tuple)
     print("DONE!!")
